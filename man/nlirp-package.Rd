@@ -4,12 +4,12 @@
 \name{nlirp-package}
 \alias{nlirp}
 \alias{nlirp-package}
-\title{nlirp: What the Package Does (One Line, Title Case)}
+\title{nlirp: Natural Language Item Response Processing - Multilingual Semantic Scoring for Open Responses}
 \description{
-What the package does (one paragraph).
+Estimate expected scores for open-ended item responses by leveraging spaCy language models. The package preprocesses response text, optionally performs spellchecking, derives document embeddings, and propagates human scores from semantically similar answers. Any installed spaCy model can be used so Dutch, English, or other languages can share a single scoring pipeline.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Joost Kruis \email{joost.kruis@cito.nl}
 
 }
 \keyword{internal}
