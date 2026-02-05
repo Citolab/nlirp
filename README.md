@@ -141,4 +141,4 @@ score_responses(
 Issues and pull requests are welcome at [Citolab/nlirp](https://github.com/Citolab/nlirp). Please include reproducible examples and session info so we can troubleshoot quickly.
 
 ## License
-Distributed under the GNU Lesser General Public License v2.1. See [LICENSE](LICENSE) for details.
+Distributed under the GNU Lesser General Public License v3.0. See [LICENSE](LICENSE) for details.
