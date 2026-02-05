@@ -1,0 +1,17 @@
+Package: nlirp
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: dplyr, fuzzywuzzyR, magrittr, pbapply, purrr, readr,
+        reticulate, rlang, spacyr, stringdist, stringr, tibble, tidyr
+Depends: R (>= 4.1.0)
+NeedsCompilation: no
+Packaged: 2026-02-05 07:32:52 UTC; joost
+Author: First Last [aut, cre]
+Maintainer: First Last <first.last@example.com>
