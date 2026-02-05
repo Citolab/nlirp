@@ -2,7 +2,7 @@
 % Please edit documentation in R/score_responses.R
 \name{score_responses}
 \alias{score_responses}
-\title{Get expected scores based on semantic similarity using spacy nlp nl_core_news_lg model}
+\title{Score open responses via multilingual spaCy similarity}
 \usage{
 score_responses(
   response_data,
@@ -15,7 +15,8 @@ score_responses(
   start_weight = 0.5,
   min_obs_accept = 5,
   min_certainty_accept = 0.75,
-  additonal_parameters = list(preprocess_params = list(), spellcheck_params = list())
+  additonal_parameters = list(preprocess_params = list(), spellcheck_params = list()),
+  spacy_model = "nl_core_news_lg"
 )
 }
 \arguments{
@@ -40,10 +41,44 @@ score_responses(
 \item{min_certainty_accept}{a numeric value between 0 and 1; the minimum certainty to accept a score}
 
 \item{additonal_parameters}{a list of parameters to be passed to the function}
+
+\item{spacy_model}{character scalar naming the spaCy language model to initialise}
 }
 \value{
-The original data.frame from data with an added columns
+The input response_data with additional feature, probability, and
+expected-score columns.
 }
 \description{
-Get expected scores based on semantic similarity using spacy nlp nl_core_news_lg model
+This helper propagates human scores to new responses by comparing
+preprocessed texts with embeddings created through spaCy language models.
+Any installed model can be supplied, making it straightforward to reuse the
+same pipeline for Dutch, English, or other languages.
+}
+\examples{
+\dontrun{
+library(tibble)
+
+responses <- tibble(
+  response_id = 1:4,
+  response = c(
+    "De rivier trad buiten haar oevers.",
+    "Het water stroomde door de straten.",
+    "Water levels rise quickly.",
+    "The levee holds."),
+  score = c(2, 2, 1, 3)
+)
+
+# Default Dutch model
+score_responses(
+  response_data = responses,
+  possible_item_scores = 0:3
+)
+
+# Switch to an English spaCy pipeline
+score_responses(
+  response_data = responses,
+  possible_item_scores = 0:3,
+  spacy_model = "en_core_web_md"
+)
+}
 }
