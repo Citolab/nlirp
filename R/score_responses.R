@@ -1,4 +1,9 @@
-#' Get expected scores based on semantic similarity using spacy nlp nl_core_news_lg model
+#' Score open responses via multilingual spaCy similarity
+#'
+#' This helper propagates human scores to new responses by comparing
+#' preprocessed texts with embeddings created through spaCy language models.
+#' Any installed model can be supplied, making it straightforward to reuse the
+#' same pipeline for Dutch, English, or other languages.
 #'
 #' @param response_data a data.frame or tibble with 3 columns (response_id, response, score) where response_id is the unique identifier for each response, response is the text of the response, and score is the score of the response given by a human rater (the response can be NA)
 #' @param possible_item_scores a vector with the possible scores for the responses
@@ -12,8 +17,36 @@
 #' @param min_certainty_accept a numeric value between 0 and 1; the minimum certainty to accept a score
 #' @param additonal_parameters a list of parameters to be passed to the function
 #'
-#' @returns The original data.frame from data with an added columns
+#' @returns The input response_data with additional feature, probability, and
+#' expected-score columns.
 #' @export
+#' @examples
+#' \dontrun{
+#' library(tibble)
+#'
+#' responses <- tibble(
+#'   response_id = 1:4,
+#'   response = c(
+#'     "De rivier trad buiten haar oevers.",
+#'     "Het water stroomde door de straten.",
+#'     "Water levels rise quickly.",
+#'     "The levee holds."),
+#'   score = c(2, 2, 1, 3)
+#' )
+#'
+#' # Default Dutch model
+#' score_responses(
+#'   response_data = responses,
+#'   possible_item_scores = 0:3
+#' )
+#'
+#' # Switch to an English spaCy pipeline
+#' score_responses(
+#'   response_data = responses,
+#'   possible_item_scores = 0:3,
+#'   spacy_model = "en_core_web_md"
+#' )
+#' }
 score_responses <- function(response_data,
                             possible_item_scores = NULL,
                             preprocessing = TRUE,
@@ -25,15 +58,21 @@ score_responses <- function(response_data,
                             min_obs_accept = 5,
                             min_certainty_accept = 0.75,
                             additonal_parameters = list(preprocess_params = list(),
-                                                        spellcheck_params = list())) {
+                                                        spellcheck_params = list()),
+                            spacy_model = "nl_core_news_lg") {
 
+  if (!is.character(spacy_model) || length(spacy_model) != 1 || is.na(spacy_model)) {
+    stop("spacy_model must be a non-missing character scalar.")
+  }
 
-  if (inherits(try(spacyr::spacy_initialize(model = "nl_core_news_lg"), silent = TRUE), "try-error")) {
+  cat(paste0("\n -- checking spaCy model ", spacy_model, " -- \n"))
+
+  if (inherits(try(spacyr::spacy_initialize(model = spacy_model), silent = TRUE), "try-error")) {
     cat("\n -- installing spacy -- \n")
-    spacyr::spacy_install(lang_models = "nl_core_news_lg")
-    cat("\n -- installing spacy model nl_core_news_lg -- \n")
-    spacyr::spacy_download_langmodel("nl_core_news_lg")
-    spacyr::spacy_initialize(model = "nl_core_news_lg")
+    spacyr::spacy_install(lang_models = spacy_model)
+    cat(paste0("\n -- installing spacy model ", spacy_model, " -- \n"))
+    spacyr::spacy_download_langmodel(spacy_model)
+    spacyr::spacy_initialize(model = spacy_model)
   }
 
   # Load python
@@ -100,7 +139,7 @@ score_responses <- function(response_data,
 
   response_data <-
     response_data |>
-    dplyr::left_join(spacy_object |>
+      dplyr::left_join(spacy_object |>
                        dplyr::filter(.data$pos %in% pos_keep) |>
                        dplyr::group_by(.data$doc_id) |>
                        dplyr::summarise(features_token = paste0(.data$token, collapse = " "),
@@ -109,7 +148,7 @@ score_responses <- function(response_data,
                                         spellcheck_fixed = any(.data$spelling_updated)),
                      by = dplyr::join_by("doc_id")) |>
     dplyr::select(-"doc_id") |>
-    tidyr::drop_na(.data$features_token)
+    tidyr::drop_na("features_token")
 
 
   if (is.null(possible_item_scores)) {
@@ -425,7 +464,7 @@ prop_score_sim <- function(data,
 
   data <-
     data |>
-    tidyr::unnest(.data$weighted_pos_score)
+    tidyr::unnest("weighted_pos_score")
 
   data <-
     data |>
