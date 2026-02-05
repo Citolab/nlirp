@@ -16,6 +16,7 @@
 #' @param min_obs_accept an integer value; the minimum number of observations to accept a score
 #' @param min_certainty_accept a numeric value between 0 and 1; the minimum certainty to accept a score
 #' @param additonal_parameters a list of parameters to be passed to the function
+#' @param spacy_model character scalar naming the spaCy language model to initialise
 #'
 #' @returns The input response_data with additional feature, probability, and
 #' expected-score columns.
