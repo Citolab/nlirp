@@ -3,7 +3,7 @@
 `nlirp` scores open-ended responses in multiple languages by matching each response against previously rated answers and calculating an expected score based on semantic similarity. It wraps a lightweight workflow around `spacyr`, `reticulate`, and spaCy language models—defaulting to the Dutch `nl_core_news_lg` pipeline while allowing any installed model such as `en_core_web_md`—to handle text cleaning, optional spellchecking, vectorisation, and weighted similarity scoring.
 
 ## Features
-- Semantic similarity scoring that mirrors human ratings using cosine similarity over spaCy embeddings in any spaCy-supported language.
+- Semantic similarity scoring that mirrors human ratings using cosine similarity over spaCy embeddings in any spaCy-supported language for packages that contain word vectors.
 - Optional preprocessing and spellchecking steps that can be customised through parameter lists.
 - Weighted aggregation of the highest-confidence neighbour scores with tunable acceptance thresholds.
 - Verbose console logging so you can follow each stage of the pipeline when running batch jobs.
@@ -134,7 +134,6 @@ score_responses(
 ```
 
 ## Tips
-- Drop or impute missing human scores before running the model if they should not influence similarity weights.
 - Adjust `min_sim_weight`, `n_highest_sim`, and `start_weight` together to balance inclusiveness versus noise.
 - Monitor `prop_score` and `n_similar` to detect responses with weak neighbours and consider manual review.
 
